@@ -3,11 +3,11 @@ title: "Populism in Pan-American Politics"
 author: "Jackson R. Mandel"
 date: "2025-04-09"
 output:
-  slidy_presentation: default
   beamer_presentation:
     theme: Madrid
     colortheme: orchid
     fonttheme: structuresmallcapsserif
+  slidy_presentation: default
 header-includes: \usepackage{palatino}
 ---
 
@@ -124,5 +124,5 @@ t_test_result <- t.test(average_populism ~ is_americas,
                         data = americasdata %>% 
                           filter(!is.na(average_populism)))
 
-print(t_test_result)
+cat("\\scriptsize", capture.output(t_test_result), sep = "\n")
 ```
