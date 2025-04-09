@@ -3,12 +3,12 @@ title: "Populism in Pan-American Politics"
 author: "Jackson R. Mandel"
 date: "2025-04-09"
 output:
+  slidy_presentation: default
   beamer_presentation:
-    theme: "Madrid"
-    colortheme: "orchid"
-    fonttheme: "structuresmallcapsserif"
-header-includes:
-  - \usepackage{palatino}
+    theme: Madrid
+    colortheme: orchid
+    fonttheme: structuresmallcapsserif
+header-includes: \usepackage{palatino}
 ---
 
 ```{r setup, include=FALSE}
