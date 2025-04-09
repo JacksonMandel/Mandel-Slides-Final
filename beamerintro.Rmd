@@ -1,0 +1,138 @@
+---
+title: "Beamer presentations"
+author: "Austin Hart, Ph.D."
+institute: "ahart@american.edu"
+output:
+  beamer_presentation:
+    theme: "Malmoe"
+    colortheme: "beaver"
+fontsize: 11pt
+classoption: "aspectratio=169"
+---
+
+```{r setup, include=FALSE}
+## Libraries
+  library(knitr)
+  library(rmdformats)
+  library(tidyverse)
+
+## Global options
+knitr::opts_chunk$set(
+  echo = FALSE, 
+  prompt = FALSE,
+  tidy = FALSE, 
+  comment = NA,
+  message = FALSE, 
+  warning = FALSE,
+  fig.align = 'center'
+)
+```
+
+# Welcome to beamer!
+
+## Getting started
+
+- Start a new RProject  
+- Create a new R Markdown file:   
+
+> New File -> RMarkdown -> Presentation -> PDF (Beamer)   
+
+- Make your presentation   
+- `Knit` to `.pdf` slides
+
+
+## YAML options
+
+
+Specify the `beamer_presentation` output, which knits to `.pdf`
+
+Set your custom themes. See [classic theme options](https://hartwork.org/beamer-theme-matrix/).
+
+```yaml
+---
+title: "Beamer presentations"
+author: "Austin Hart, Ph.D."
+institute: "ahart@american.edu"
+output:
+  beamer_presentation:
+    theme: "Malmoe"
+    colortheme: "beaver"
+fontsize: 12pt
+classoption: "aspectratio=169"
+---
+```
+
+## Setup chunk
+
+- Knitting initiates a new R environment. 
+- Your `.Rmd` must be self-contained.
+- Define the `knit` in a setup chunk. 
+- Also the place to load packages, data, etc. 
+
+## Example setup
+
+```{r, eval = F, echo = T}
+## Global options
+  knitr::opts_chunk$set(
+    echo = FALSE,
+    message = FALSE,
+    warning = FALSE,
+    fig.align = 'center' 
+  )
+
+## Packages
+  library(tidyverse)
+  library(knitr)
+
+## Load data? Set themes?
+```
+
+## Defining new slides
+
+- Initiate new slide with `##` Level 2 heading.  
+- Use Level 1 (`#`) for BIG section slides
+
+```{r, echo = T, eval = F}
+## Title of slide 1
+- Roadmap. 
+- Materials.
+
+## Slide 2
+> Inspirational quote
+
+## Slide 3  
+### Subtitle
+)
+```
+
+# Big section change
+
+## No easy column splits
+
+One downside is that columns splits are very tough.
+
+A graph to ease the pain.
+
+```{r, fig.dim=c(3,2)}
+  mtcars |>
+    ggplot(aes(x = mpg)) +
+    geom_histogram(color = 'white', bins = 12) +
+    theme_classic(base_size = 9) +
+    scale_y_continuous(expand = expansion(mult = c(0,.01)))
+```
+
+## Basic reminders
+
+### Level 3 header
+
+If you want to write text, just write text.
+
+- Itemized list  
+  - Start with a `-` or `*` and type.  
+  - Need two spaces or hard return between items.  
+  
+*Fancy italic* text.  
+**Shouty bold** text.
+
+
+

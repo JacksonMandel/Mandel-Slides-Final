@@ -1,0 +1,210 @@
+---
+title: "Slide Decks with xaringan"
+author: "Austin Hart, Ph.D."
+institute: "American University"
+date: "ahart@american.edu"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: [default, rladies, rutgers-fonts]
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      ratio: "16:9"
+---
+
+
+```{r setup, include=FALSE}
+## Libraries
+  library(knitr)
+  library(rmdformats)
+
+## Global options
+knitr::opts_chunk$set(
+  echo = FALSE, prompt = FALSE,
+  tidy = FALSE, comment = NA,
+  message = FALSE, warning = FALSE,
+  dev = 'CairoSVG',
+  fig.align = 'center'
+)
+```
+
+# Getting started
+
+- Start a new RProject  
+
+- Create a new R Markdown file: 
+
+> File -> New File -> R Markdown -> From Template -> Ninja Presentation  
+
+- Make your presentation   
+
+- `Knit` to `.html` slides
+
+
+---
+# YAML options
+## Set your metadata
+
+.pull-left[
+Specify the `xaringan` template, which will `knit` to a `.html` slide deck. 
+
+Specify standard or custom `css` formats. Run `names(xaringan:::list_css())` to see options.
+]
+.pull-right[
+
+```yaml
+---
+title: "xaringan Presentations"
+author: "Austin Hart, Ph.D."
+institute: "American University"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: [default, fc, fc-fonts]
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      ratio: "16:9"
+---
+```
+]
+
+---
+# Setup chunk
+
+.pull-left[
+  **Remember**: Knitting initiates a new/fresh R environment, and your `.Rmd` file must be self-contained.
+  
+  Setup chunk should follow the `YAML` and define the options when knitting.
+  
+  One key is your visual. Consider setting a default file type (sett graphcis device through `dev`) and alignment.
+]
+
+.pull-right[
+
+```{r, eval=FALSE, echo = TRUE}
+## Global options
+  knitr::opts_chunk$set(
+    echo = FALSE, 
+    tidy = FALSE,
+    message = FALSE, 
+    warning = FALSE,
+    dev = 'svg',
+    fig.align = 'center'
+  )
+
+## Libraries
+  library(tidyverse)
+  library(knitr)
+
+## Load data?
+## Set ggplot theme?
+```
+]
+
+
+---
+# Defining new slides
+
+.pull-left[
+- Initiate new slide using:  `---`
+
+- Titles are level-1 headers: `# Title`
+
+- Class: `inverse` for dark
+
+- Alignment:  
+
+  - Vertical: `bottom`, `middle`, `top`  
+  - Horizontal: `left`, `center`, `right`  
+]
+
+.pull-right[
+```{r, eval = F, echo = T}
+
+# Title of Slide 1
+
+- Roadmap
+- Materials
+
+---
+# Slide 2 title
+
+  > Inspirational quote.
+
+---
+class: inverse, left, bottom
+# Slide 3 title
+## Subtitle
+
+```
+]
+
+---
+class: inverse, top, left
+
+# Top-left alignment
+## Also inverse
+
+---
+class: inverse, center, middle
+
+# Center-middle
+## I've changed
+
+
+---
+class: inverse, bottom, right  
+
+# Bottom-right alignment  
+## Please stop
+
+
+---
+# Column splits
+
+Split columns by including content inside `.pull-left[]` and `.pull-right[]`
+
+.pull-left[
+### Left column
+
+```{r, echo = T}
+  summary(mtcars$mpg)
+```
+]
+
+.pull-right[
+### Right column
+
+```{r, echo = T, fig.dim=c(4,3)}
+  hist(mtcars$mpg)
+```
+]
+
+---
+# Hosting with ghpages
+
+You can host your slides remotely on github!
+
+1. Initiate and clone a repository.  
+
+2. Build and compile your slides.  
+
+3. CRITICAL: name the deck `index.html`.  
+
+4. Commit and push to github.  
+
+5. On github, go to Settings -> Pages.  
+
+6. Change "Branch" from none to master. Click save.  
+
+7. Find your slides at: `user_name.github.io/repo_name`
+
+---
+# Useful Resources
+
+- Yihui Xie is the guru of all things markdown (and the author of the `knitr` package). His book [R Markdown: The Definitive Guide](https://bookdown.org/yihui/rmarkdown/)  is a great intro. See Chapters 4, 7, 9 for info on slide presentations.
+
+- Irene Vrbik also has an excellent [example slide deck](https://irene.vrbik.ok.ubc.ca/slides/NHSRxaringan.html#1). See her [markdown code on github](https://github.com/vrbiki/learning-xaringan/blob/master/NHSRxaringan.Rmd) to mimic all the little fancy things.
+
