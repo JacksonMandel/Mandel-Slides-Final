@@ -3,6 +3,7 @@
 library(tidyverse)
 library(dplyr)
 library(ggplot2)
+library(countrycode)
 
 #Download Data
 fulldata <- readRDS("V-Dem-CPD-Party-V2.rds")
@@ -45,38 +46,38 @@ ggplot(ranked_populism, aes(y = average_populism)) +
        y = "Average Populism Score") +
   theme_minimal()
 
-#Creating a binary variable for whether countries are in the Americas
+#Creating a variable for continent
+bycontinent <- ranked_populism %>%
+  mutate(continent = countrycode(country_name, origin = "country.name", 
+                                 destination = "continent"),
+         continent = ifelse(continent == "Americas", "America", continent))
 
-americas_countries <- c("Dominican Republic", "Haiti", "Guyana", "Uruguay", 
-                        "Jamaica", "El Salvador", "Panama", "Honduras", 
-                        "Argentina", "Barbados", "Canada", "Colombia", 
-                        "Trinidad and Tobago", "Ecuador", "Guatemala", 
-                        "Paraguay", "Mexico", "Peru", "Nicaragua", "Brazil", 
-                        "Costa Rica", "Venezuela", "Cuba", 
-                        "United States of America")
-americasdata <- ranked_populism %>%
-  mutate(is_americas = ifelse(country_name %in% americas_countries, 
-                              "Americas", "Other"))
-
-#Americas or Not Boxplot
-ggplot(americasdata, aes(x = factor(is_americas, labels = 
-                                      c("Rest of World", "Americas")), 
+#Boxplot by Continent
+ggplot(bycontinent, aes(x = factor(continent, levels = c("America", "Africa", "Asia", "Europe", "Oceania", "Other")), 
                          y = average_populism)) +
   geom_boxplot(fill = "lightblue", color = "black") +
   labs(title = "Average Populism: Americas & Rest of World", x = "", 
        y = "Average Populism Score") +
   theme_minimal()
 
-#Perform a t-test
-t_test_result <- t.test(average_populism ~ is_americas, 
-                        data = americasdata %>% 
-                          filter(!is.na(average_populism)))
-t_test_summary <- data.frame(
-  "Statistic" = t_test_result$statistic,
-  "p-value" = t_test_result$p.value,
-  "Confidence Interval" = paste(round(t_test_result$conf.int[1], 2), "to", 
-                                round(t_test_result$conf.int[2], 2)),
-  "Mean Difference" = round(t_test_result$estimate[1] - 
-                              t_test_result$estimate[2], 2)
-)
-print(t_test_summary)
+#Regression of Populism and Seat Share in the Americas
+americasdata <- cleandata %>%
+  mutate(continent = countrycode(country_name, origin = "country.name", destination = "continent")) %>%
+  filter(continent == "Americas")
+
+ggplot(americasdata, aes(x = v2paseatshare, y = v2xpa_popul)) +
+  geom_point(color = "blue") +
+  geom_smooth(method = "lm", se = FALSE, color = "red") +
+  labs(title = "Regression of v2xpa_popul on v2paseatshare",
+       x = "v2paseatshare",
+       y = "v2xpa_popul") +
+  theme(
+    plot.title = element_text(size = 18, face = "bold", color = "black", family = "serif"),
+    axis.title = element_text(size = 16, face = "bold", color = "black", family = "serif"),
+    axis.text = element_text(size = 12, face = "bold", color = "black", family = "serif"),
+    axis.line = element_line(color = "black"),
+    panel.background = element_rect(fill = "white"),
+    plot.background = element_rect(fill = "white"),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank()
+  )

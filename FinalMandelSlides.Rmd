@@ -18,7 +18,7 @@ knitr::opts_chunk$set(echo = FALSE)
 library(tidyverse)
 library(dplyr)
 library(ggplot2)
-library(kableExtra)
+library(countrycode)
 
 #Download Data
 fulldata <- readRDS("V-Dem-CPD-Party-V2.rds")
@@ -61,18 +61,11 @@ ggplot(ranked_populism, aes(y = average_populism)) +
        y = "Average Populism Score") +
   theme_minimal()
 
-#Creating a binary variable for whether countries are in the Americas
-
-americas_countries <- c("Dominican Republic", "Haiti", "Guyana", "Uruguay", 
-                        "Jamaica", "El Salvador", "Panama", "Honduras", 
-                        "Argentina", "Barbados", "Canada", "Colombia", 
-                        "Trinidad and Tobago", "Ecuador", "Guatemala", 
-                        "Paraguay", "Mexico", "Peru", "Nicaragua", "Brazil", 
-                        "Costa Rica", "Venezuela", "Cuba", 
-                        "United States of America")
-americasdata <- ranked_populism %>%
-  mutate(is_americas = ifelse(country_name %in% americas_countries, 
-                              "Americas", "Other"))
+#Creating a variable for continent
+bycontinent <- ranked_populism %>%
+  mutate(continent = countrycode(country_name, origin = "country.name", 
+                                 destination = "continent"),
+         continent = ifelse(continent == "Americas", "America", continent))
 ```
 
 ## Introduction
@@ -81,7 +74,7 @@ americasdata <- ranked_populism %>%
 - Motivation:
      - Understanding political dynamics unique to the Americas
      - Uncovering structural similarities between Anglo-American and Latin American political systems
-- Conclusion: Although the average populism score of pan-American parties was higher than the rest of the world, the difference was not statistically significant.
+- Conclusion: Although the average populism score of pan-American parties was higher in some regions of the world, the difference was not statistically significant.
 
 ## Data
 
@@ -90,18 +83,17 @@ americasdata <- ranked_populism %>%
   - Aggregate of a score of anti-elite rhetoric and rhetoric identifying "the people" as a homogenous sovereign interest group
 - v2paseatshare: the share of seats in parliament at the last election
      - Used to filter out parties with less than 10% of seats
-- country_name: used to create a new variable identifying if a country is in the Americas
+- country_name: used to create a new variable identifying what continent a country is on.
 
 ## Comparing Populist Rhetoric
 
 ```{r boxplot}
 #Americas or Not Boxplot
-ggplot(americasdata, aes(x = factor(is_americas, labels = 
-                                      c("Rest of World", "Americas")), 
-                         y = average_populism)) +
-  geom_boxplot(fill = "royalblue", color = "black") +
+ggplot(bycontinent, aes(x = factor(continent, levels = c("America", "Africa", "Asia", "Europe", "Oceania", "Other")), 
+                         y = average_populism)) + 
+  geom_boxplot(fill = "royalblue", color = "black") + 
   labs(title = "Average Populism: Americas & Rest of World", x = "", 
-       y = "Average Populism Score") +
+       y = "Average Populism Score") + 
   theme(
     plot.title = element_text(size = 20, face = "bold", color = "black", family = "serif"),
     axis.title = element_text(size = 18, face = "bold", color = "black", family = "serif"),
@@ -114,15 +106,29 @@ ggplot(americasdata, aes(x = factor(is_americas, labels =
   )
 ```
 
-## Difference of Means Test
-- Null Hypothesis: The average viable political party in the Americas does not use more populist rhetoric than the average political party in the rest of the world.
-  - Result: failure to reject the null hypothesis
-```{r t test}
+## Success of Populist Parties in the Americas
 
-#Perform a t-test
-t_test_result <- t.test(average_populism ~ is_americas, 
-                        data = americasdata %>% 
-                          filter(!is.na(average_populism)))
-
-cat("\\scriptsize", capture.output(t_test_result), sep = "\n")
+```{r regression, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
+americasdata <- cleandata %>%
+  mutate(continent = countrycode(country_name, origin = "country.name", destination = "continent")) %>%
+  filter(continent == "Americas")
+ggplot(americasdata, aes(x = v2paseatshare, y = v2xpa_popul)) +
+  geom_point(color = "blue") +
+  geom_smooth(method = "lm", se = FALSE, color = "red") +
+  labs(
+    title = "Regression of Populism on Seat Share in the Americas",
+    x = "Seat Share (%)",
+    y = "Populism Index"
+  ) +
+  theme(
+    plot.title = element_text(size = 18, face = "bold", color = "black", family = "serif"),
+    axis.title = element_text(size = 16, face = "bold", color = "black", family = "serif"),
+    axis.text = element_text(size = 12, face = "bold", color = "black", family = "serif"),
+    axis.line = element_line(color = "black"),
+    panel.background = element_rect(fill = "white"),
+    plot.background = element_rect(fill = "white"),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank()
+  )
 ```
+
